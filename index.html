@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>KURAMA LADDER 関所帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+JP:wght@400;500&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sumi:#141210; --panel:#1e1913; --panel2:#241e16; --line:#2e271d;
+  --ink:#ede5d6; --dim:#978b78; --gold:#c9a24b;
+  --open:#8fbf6a; --closed:#c2452d; --accent:var(--closed);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--sumi);color:var(--ink);font-family:"Noto Sans JP",sans-serif;font-size:14px;line-height:1.6;padding:16px 14px 60px}
+.wrap{max-width:960px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:18px}
+.brand{font-family:"Shippori Mincho",serif;font-weight:700;font-size:18px;letter-spacing:.14em}
+.brand em{color:var(--gold);font-style:normal}
+.stamp{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--dim)}
+h2{font-family:"Shippori Mincho",serif;font-weight:600;font-size:14px;letter-spacing:.2em;color:var(--gold);margin:26px 0 10px;display:flex;align-items:center;gap:10px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+.mono{font-family:"IBM Plex Mono",monospace}
+
+/* ===== 関所(地合い) ===== */
+.gate{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;align-items:stretch}
+.plaque{writing-mode:vertical-rl;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  min-width:84px;border:2px solid var(--accent);border-radius:8px;padding:12px 8px;background:var(--panel2)}
+.plaque .big{font-family:"Shippori Mincho",serif;font-size:52px;font-weight:700;color:var(--accent);line-height:1}
+.plaque .sub{font-size:10px;letter-spacing:.5em;color:var(--dim);margin-top:8px}
+.gate-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.gate-state{font-size:15px;font-weight:500}
+.gate-state b{color:var(--accent)}
+.gate-note{color:var(--dim);font-size:12px}
+.spark{width:100%;height:74px;margin-top:auto}
+.spark path{fill:none;stroke-width:1.5}
+
+/* ===== カード ===== */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;padding:12px}
+.card .head{display:flex;justify-content:space-between;align-items:baseline}
+.card .sym{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px}
+.grade{font-family:"Shippori Mincho",serif;color:var(--sumi);background:var(--gold);border-radius:4px;padding:0 7px;font-size:12px;font-weight:700}
+.grade.STAR{background:var(--dim)}
+.kv{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin-top:4px}
+.kv .v{font-family:"IBM Plex Mono",monospace;color:var(--ink)}
+.kv .v.dip{color:var(--open);font-weight:600}
+.empty{color:var(--dim);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:16px;text-align:center}
+
+/* ===== 関所ラダー(3列) ===== */
+.ladder{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;min-height:90px}
+.tier h3{font-family:"Shippori Mincho",serif;font-size:12px;letter-spacing:.15em;color:var(--dim);font-weight:600;
+  border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px;display:flex;justify-content:space-between}
+.tier h3 .cnt{font-family:"IBM Plex Mono",monospace;color:var(--gold)}
+.trow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+.trow .sym{font-family:"IBM Plex Mono",monospace}
+.trow .meta{color:var(--dim);font-size:11px}
+
+/* ===== 実績 ===== */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center}
+.stat .n{font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:600}
+.stat .l{font-size:11px;color:var(--dim)}
+.stat .n.pos{color:var(--open)}.stat .n.neg{color:var(--closed)}
+
+/* ===== 記録 ===== */
+table{width:100%;border-collapse:collapse;font-size:12px}
+td{padding:5px 6px;border-bottom:1px solid var(--line)}
+td.ts{font-family:"IBM Plex Mono",monospace;color:var(--dim);white-space:nowrap}
+td.sym{font-family:"IBM Plex Mono",monospace}
+.kind{border-radius:4px;padding:0 6px;font-size:11px;background:var(--panel2);color:var(--dim);white-space:nowrap}
+.kind.good{color:var(--open)}.kind.bad{color:var(--closed)}.kind.gold{color:var(--gold)}
+
+#err{display:none;background:var(--panel);border:1px solid var(--closed);border-radius:8px;padding:14px;color:var(--ink);margin-bottom:16px}
+footer{margin-top:34px;color:var(--dim);font-size:11px;text-align:center;letter-spacing:.1em}
+@media(max-width:640px){.ladder{grid-template-columns:1fr}.plaque .big{font-size:40px}}
+@media(prefers-reduced-motion:no-preference){
+  .gate,.card,.tier,.stat{animation:rise .4s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">KURAMA <em>LADDER</em> 関所帳</div>
+    <div class="stamp" id="stamp">読込中…</div>
+  </header>
+
+  <div id="err">data.json が読めません。まだ初回実行が届いてないか、公開設定を確認してください。</div>
+
+  <section class="gate" id="gate" hidden>
+    <div class="plaque"><div class="big" id="gateChar">閉</div><div class="sub">関所</div></div>
+    <div class="gate-info">
+      <div class="gate-state" id="gateState"></div>
+      <div class="gate-note" id="gateNote"></div>
+      <svg class="spark" id="btcSpark" viewBox="0 0 600 74" preserveAspectRatio="none"></svg>
+    </div>
+  </section>
+
+  <h2>買い場(押し目指値)</h2>
+  <div class="cards" id="signals"></div>
+
+  <h2>関所ラダー</h2>
+  <div class="ladder">
+    <div class="tier"><h3>一の関 監視入り <span class="cnt" id="cWatch">0</span></h3><div id="watch"></div></div>
+    <div class="tier"><h3>二の関 冷却中 <span class="cnt" id="cPromo">0</span></h3><div id="promoted"></div></div>
+    <div class="tier"><h3>三の関 候補 <span class="cnt" id="cConf">0</span></h3><div id="confirmed"></div></div>
+  </div>
+
+  <h2>実績(昇格後リターン)</h2>
+  <div class="stats" id="stats"></div>
+
+  <h2>記録</h2>
+  <table><tbody id="events"></tbody></table>
+
+  <footer>蔵 KURAMA LADDER — 判定は機械、執行は人</footer>
+</div>
+
+<script>
+const KIND = {
+  NEW_T1:["監視入り",""], PROMOTED:["昇格","gold"], CONFIRMED:["候補入り","good"],
+  REJECTED:["除外",""], BUY_ZONE:["買い場","good"], EXIT_T3:["三の関上場","gold"],
+  EXIT_TREND:["トレンド終了","bad"], EXIT_SL:["SL","bad"], EXIT_TIME:["期限","bad"]
+};
+const fmt = v => v==null ? "-" : (v>=100 ? v.toLocaleString(undefined,{maximumFractionDigits:2}) : String(+v.toPrecision(6)));
+
+function sparkline(el, closes, maVals){
+  if(!closes || closes.length<2) return;
+  const w=600,h=74,pad=3;
+  const all = closes.concat((maVals||[]).filter(x=>x!=null));
+  const mn=Math.min(...all), mx=Math.max(...all), rg=(mx-mn)||1;
+  const X=i=>pad+(w-2*pad)*i/(closes.length-1);
+  const Y=v=>h-pad-(h-2*pad)*(v-mn)/rg;
+  const path=a=>a.map((v,i)=>v==null?null:`${i&&a[i-1]!=null?"L":"M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).filter(Boolean).join(" ");
+  const accent=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+  el.innerHTML=`<path d="${path(closes)}" stroke="${accent}"/>`+(maVals?`<path d="${path(maVals)}" stroke="#c9a24b" stroke-dasharray="4 3"/>`:"");
+}
+
+function card(s){
+  return `<div class="card">
+    <div class="head"><span class="sym">${s.base}</span><span class="grade ${s.grade}">${s.grade==="STAR"?"★":s.grade}</span></div>
+    <div class="kv"><span>現値</span><span class="v mono">${fmt(s.last)}</span></div>
+    <div class="kv"><span>指値(押し目)</span><span class="v dip mono">${fmt(s.dip)}</span></div>
+    <div class="kv"><span>指値まで</span><span class="v mono">-${s.dist_pct}%</span></div>
+    <div class="kv"><span>トレンド</span><span class="v mono">${s.trend_days}日目</span></div>
+  </div>`;
+}
+
+async function main(){
+  let d;
+  try{
+    const r=await fetch("data.json?t="+Date.now());
+    if(!r.ok) throw 0;
+    d=await r.json();
+  }catch(e){document.getElementById("err").style.display="block";document.getElementById("stamp").textContent="—";return;}
+
+  document.getElementById("stamp").textContent=d.generated_at+" 更新";
+
+  // 関所
+  const g=d.regime||{}, open=g.state==="UP";
+  document.documentElement.style.setProperty("--accent", open?"var(--open)":"var(--closed)");
+  const gate=document.getElementById("gate"); gate.hidden=false;
+  document.getElementById("gateChar").textContent=open?"開":"閉";
+  document.getElementById("gateState").innerHTML=
+    `BTC地合い: <b>${open?"上昇トレンド":"レンジ/下降"}</b>(${g.days??"-"}日継続)・現値 <span class="mono">${fmt(g.last)}</span>`;
+  document.getElementById("gateNote").textContent=
+    open?"門は開いている。候補の押し目到達を待て。":"門は閉じている。新規エントリーなし。監視と記録だけ続く。";
+  sparkline(document.getElementById("btcSpark"), g.spark_c, g.spark_ma);
+
+  // 買い場
+  const sig=document.getElementById("signals");
+  sig.innerHTML=(d.signals&&d.signals.length)
+    ? d.signals.map(card).join("")
+    : `<div class="empty" style="grid-column:1/-1">${open?"本日の買い場はなし。候補の押し目待ち。":"門が閉じているため買い場は出ない。"}</div>`;
+
+  // ラダー
+  const W=d.watch||[], P=d.promoted||[], C=d.confirmed||[];
+  document.getElementById("cWatch").textContent=W.length;
+  document.getElementById("cPromo").textContent=P.length;
+  document.getElementById("cConf").textContent=C.length;
+  document.getElementById("watch").innerHTML=W.length
+    ? W.map(x=>`<div class="trow"><span class="sym">${x.base}</span><span class="meta">${x.exchange} ${x.date.slice(5)}</span></div>`).join("")
+    : `<div class="meta" style="color:var(--dim);font-size:12px">直近21日の新規なし</div>`;
+  document.getElementById("promoted").innerHTML=P.length
+    ? P.map(x=>`<div class="trow"><span class="sym">${x.base}</span><span class="meta">${x.exchanges.join("/")}・あと${x.days_left}日</span></div>`).join("")
+    : `<div class="meta" style="color:var(--dim);font-size:12px">冷却中なし</div>`;
+  document.getElementById("confirmed").innerHTML=C.length
+    ? C.map(x=>`<div class="trow"><span class="sym">${x.base}</span><span class="meta">${x.grade==="STAR"?"★":x.grade}・${x.state==="UP"?"緑帯"+x.trend_days+"日":"待機"}</span></div>`).join("")
+    : `<div class="meta" style="color:var(--dim);font-size:12px">候補なし</div>`;
+
+  // 実績
+  const rp=d.report||{}, st=document.getElementById("stats");
+  if(rp.n){
+    st.innerHTML=`
+      <div class="stat"><div class="n">${rp.n}</div><div class="l">昇格イベント</div></div>
+      <div class="stat"><div class="n">${rp.winrate}%</div><div class="l">勝率</div></div>
+      <div class="stat"><div class="n ${rp.avg>=0?"pos":"neg"}">${rp.avg>0?"+":""}${rp.avg}%</div><div class="l">平均</div></div>
+      <div class="stat"><div class="n pos">+${rp.best}%</div><div class="l">最大</div></div>
+      <div class="stat"><div class="n neg">${rp.worst}%</div><div class="l">最小</div></div>`;
+  }else{
+    st.innerHTML=`<div class="empty" style="grid-column:1/-1">実績はまだない。昇格イベントが積み上がると、ここが自前の根拠になる。</div>`;
+  }
+
+  // 記録
+  document.getElementById("events").innerHTML=(d.events||[]).map(e=>{
+    const [label,cls]=KIND[e.kind]||[e.kind,""];
+    return `<tr><td class="ts">${e.ts.slice(5)}</td><td class="sym">${e.base}</td><td><span class="kind ${cls}">${label}</span></td><td style="color:var(--dim)">${e.detail||""}</td></tr>`;
+  }).join("")||`<tr><td style="color:var(--dim)">記録なし</td></tr>`;
+}
+main();
+</script>
+</body>
+</html>
