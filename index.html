@@ -48,6 +48,12 @@ h2::after{content:"";flex:1;height:1px;background:var(--line)}
 .kv{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin-top:4px}
 .kv .v{font-family:"IBM Plex Mono",monospace;color:var(--ink)}
 .kv .v.dip{color:var(--open);font-weight:600}
+.tname{font-size:11px;color:var(--dim);margin-top:1px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px}
+.chip{font-size:10px;border:1px solid var(--line);border-radius:10px;padding:0 7px;color:var(--dim)}
+.links{margin-top:8px;display:flex;gap:14px;font-size:12px}
+.links a{color:var(--gold);text-decoration:none;border-bottom:1px dotted var(--gold)}
+.trow{align-items:flex-start}
 .empty{color:var(--dim);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:16px;text-align:center}
 
 /* ===== 関所ラダー(3列) ===== */
@@ -128,6 +134,13 @@ const KIND = {
   EXIT_TREND:["トレンド終了","bad"], EXIT_SL:["SL","bad"], EXIT_TIME:["期限","bad"]
 };
 const fmt = v => v==null ? "-" : (v>=100 ? v.toLocaleString(undefined,{maximumFractionDigits:2}) : String(+v.toPrecision(6)));
+const money = v => {
+  if(v==null) return "-";
+  if(v>=1e9) return "$"+(v/1e9).toFixed(1)+"B";
+  if(v>=1e6) return "$"+(v/1e6).toFixed(1)+"M";
+  if(v>=1e3) return "$"+(v/1e3).toFixed(0)+"K";
+  return "$"+Math.round(v);
+};
 
 function sparkline(el, closes, maVals){
   if(!closes || closes.length<2) return;
@@ -142,12 +155,22 @@ function sparkline(el, closes, maVals){
 }
 
 function card(s){
+  const m=s.meta||{};
+  const chips=(m.cats||[]).slice(0,3).map(c=>`<span class="chip">${c}</span>`).join("");
+  const links=[m.homepage&&`<a href="${m.homepage}" target="_blank" rel="noopener">公式</a>`,
+               m.twitter&&`<a href="${m.twitter}" target="_blank" rel="noopener">X</a>`,
+               m.cg_url&&`<a href="${m.cg_url}" target="_blank" rel="noopener">CoinGecko</a>`].filter(Boolean).join("");
   return `<div class="card">
     <div class="head"><span class="sym">${s.base}</span><span class="grade ${s.grade}">${s.grade==="STAR"?"★":s.grade}</span></div>
+    ${m.name?`<div class="tname">${m.name}${m.chain?` · ${m.chain}`:""}</div>`:""}
+    ${chips?`<div class="chips">${chips}</div>`:""}
     <div class="kv"><span>現値</span><span class="v mono">${fmt(s.last)}</span></div>
     <div class="kv"><span>指値(押し目)</span><span class="v dip mono">${fmt(s.dip)}</span></div>
     <div class="kv"><span>指値まで</span><span class="v mono">-${s.dist_pct}%</span></div>
+    <div class="kv"><span>時価総額</span><span class="v mono">${money(m.mcap)}</span></div>
+    <div class="kv"><span>24h出来高</span><span class="v mono">${money(m.volume)}</span></div>
     <div class="kv"><span>トレンド</span><span class="v mono">${s.trend_days}日目</span></div>
+    ${links?`<div class="links">${links}</div>`:""}
   </div>`;
 }
 
@@ -184,13 +207,13 @@ async function main(){
   document.getElementById("cPromo").textContent=P.length;
   document.getElementById("cConf").textContent=C.length;
   document.getElementById("watch").innerHTML=W.length
-    ? W.map(x=>`<div class="trow"><span class="sym">${x.base}</span><span class="meta">${x.exchange} ${x.date.slice(5)}</span></div>`).join("")
+    ? W.map(x=>{const m=x.meta||{};return `<div class="trow"><div><span class="sym">${x.base}</span>${m.name?`<div class="tname">${m.name}</div>`:""}</div><div class="meta" style="text-align:right">${x.exchange} ${x.date.slice(5)}${m.mcap?`<div>${money(m.mcap)}</div>`:""}</div></div>`}).join("")
     : `<div class="meta" style="color:var(--dim);font-size:12px">直近21日の新規なし</div>`;
   document.getElementById("promoted").innerHTML=P.length
-    ? P.map(x=>`<div class="trow"><span class="sym">${x.base}</span><span class="meta">${x.exchanges.join("/")}・あと${x.days_left}日</span></div>`).join("")
+    ? P.map(x=>{const m=x.meta||{};return `<div class="trow"><div><span class="sym">${x.base}</span>${m.name?`<div class="tname">${m.name}</div>`:""}</div><span class="meta">${x.exchanges.join("/")}・あと${x.days_left}日</span></div>`}).join("")
     : `<div class="meta" style="color:var(--dim);font-size:12px">冷却中なし</div>`;
   document.getElementById("confirmed").innerHTML=C.length
-    ? C.map(x=>`<div class="trow"><span class="sym">${x.base}</span><span class="meta">${x.grade==="STAR"?"★":x.grade}・${x.state==="UP"?"緑帯"+x.trend_days+"日":"待機"}</span></div>`).join("")
+    ? C.map(x=>{const m=x.meta||{};return `<div class="trow"><div><span class="sym">${x.base}</span>${m.name?`<div class="tname">${m.name}</div>`:""}</div><div class="meta" style="text-align:right">${x.grade==="STAR"?"★":x.grade}・${x.state==="UP"?"緑帯"+x.trend_days+"日":"待機"}${m.mcap?`<div>${money(m.mcap)}</div>`:""}</div></div>`}).join("")
     : `<div class="meta" style="color:var(--dim);font-size:12px">候補なし</div>`;
 
   // 実績
